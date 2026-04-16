@@ -95,6 +95,7 @@ Pilih satu paper riset di bidang TI yang mengklaim "metode X meningkatkan perfor
 
 **Dua distorsi spesifik yang teridentifikasi:**
 1. **Sampling Bias:** Dataset dibatasi hanya 500 data per kategori karena keterbatasan perangkat (device), sehingga mungkin tidak mewakili seluruh variasi visual penyakit di lapangan.
+   
 2.**Resolution Distortion:** Proses resize gambar asli ke 224x224 piksel dapat menghilangkan detail tekstur halus yang mungkin penting untuk identifikasi penyakit secara medis.
 
 ---
