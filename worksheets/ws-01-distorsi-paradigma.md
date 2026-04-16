@@ -54,7 +54,7 @@ Mata kuliah ini menggunakan pendekatan **Positivist** (fenomena TI bisa diukur o
 
 ```
 Nama Peneliti    : Defita Dwi Wulandary
-Tanggal          : 16 April 2026
+Tanggal          : 12 April 2026
 
 1. Ketika membaca klaim "metode X 95% akurat":
    - Pertanyaan pertama saya: Apakah akurasi ini diuji pada data yang benar-benar baru (test set) atau terjadi overfitting karena dataset yang terlalu homogen
