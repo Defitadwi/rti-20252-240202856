@@ -73,7 +73,7 @@ Domain & Konteks
 System Context
   Input       : Citra digital (foto) daun tanaman padi yang diambil melalui kamera perangkat mobile.
   Process     : Preprocessing (resize & normalisasi), ekstraksi fitur menggunakan arsitektur InceptionV3, dan pelatihan model CNN.
-  Output      : ____________________Label kategori penyakit (Blas, Brownspot, atau HDB) beserta nilai akurasi klasifikasi.
+  Output      : Label kategori penyakit (Blas, Brownspot, atau HDB) beserta nilai akurasi klasifikasi.
   Outcome     : Meningkatkan akurasi dan kecepatan petani dalam mendiagnosis penyakit padi tanpa harus bergantung sepenuhnya pada pakar manual.
   Constraints : Keterbatasan perangkat keras (device) untuk pemrosesan dataset besar dan variasi pencahayaan pada foto lapangan.
   Stakeholders: Petani, penyuluh pertanian, dan pengembang sistem informasi pertanian.
@@ -86,7 +86,7 @@ Fenomena → Problem
   Variabel yang terukur             : Akurasi klasifikasi (%), loss score, dan jumlah epoch.
 
 Problem Quality Check
-  [ ] Clarity — Masalah didefinisikan secara spesifik pada metode CNN (InceptionV3) dan objek penyakit padi (Blas, Brownspot, HDB), bukan sekadar "masalah pertanian" secara umum.
+  [X] Clarity — Masalah didefinisikan secara spesifik pada metode CNN (InceptionV3) dan objek penyakit padi (Blas, Brownspot, HDB), bukan sekadar "masalah pertanian" secara umum.
   [X] Measurability — Menggunakan metrik kuantitatif yang jelas yaitu Akurasi (%) dan Loss melalui variasi Epoch (10, 20, 30).
   [X] Relevance — Sangat relevan bagi domain agroteknologi di Indonesia mengingat padi adalah komoditas pangan utama yang sering terdampak penyakit.
   [X] Testability — Eksperimen ini bisa gagal jika ternyata penambahan epoch tidak meningkatkan akurasi atau jika model mengalami overfitting.
@@ -102,8 +102,7 @@ Identifikasi penyakit pada daun tanaman padi saat ini masih didominasi oleh peng
 
 Pilih satu topik di bidang TI yang diminati. Transformasikan melalui 5 tahap Problem Formation Model.
 
-**Topik awal:** ________________________________________
-
+**Topik awal:** Otomatisasi Deteksi Penyakit Tanaman Padi menggunakan Computer Vision.
 | Tahap | Hasil |
 |-------|-------|
 | Reality | Petani kesulitan membedakan jenis penyakit daun padi (Blas, Brownspot, HDB) secara akurat di lapangan tanpa bantuan pakar. |
