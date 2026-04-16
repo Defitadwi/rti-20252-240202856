@@ -81,7 +81,7 @@ Pilih satu paper riset di bidang TI yang mengklaim "metode X meningkatkan perfor
 
 **Paper yang dipilih:**
 > Judul: Penerapan Metode Convolutional Neural Network (CNN) Dalam Mengklasifikasikan Penyakit Daun Tanaman Padi
-> Penulis (Tahun): Gracia Yoel Christiawan, Roy Andani Putra, Azis Sulaiman, Evy Poerbaningtyas, Syntia Widyayuningtias, Putri Listio
+> Penulis (Tahun): Gracia Yoel Christiawan, Roy Andani Putra, Azis Sulaiman, Evy Poerbaningtyas, Syntia Widyayuningtias, Putri Listio, 2023
 
 | Tahap | Apa yang Dilakukan | Potensi Distorsi |
 |-------|-------------------|-----------------|
