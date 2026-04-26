@@ -66,19 +66,18 @@ Metrik harus ditentukan **sebelum** eksperimen. Memilih metrik setelah melihat d
 ```
 VARIABLE & METRIC DEFINITION
 
-Research Question: ____________________
-
+Research Question: Sejauh mana peningkatan jumlah epoch (10, 20, 30) memengaruhi akurasi klasifikasi penyakit padi menggunakan arsitektur InceptionV3 pada dataset terbatas?
 | Variabel | Tipe | Konsep | Metrik | Skala | Satuan | Cara Mengukur | Justifikasi |
 |----------|------|--------|--------|-------|--------|---------------|-------------|
-|          | IV   |        |        |       |        |               |             |
-|          | DV   |        |        |       |        |               |             |
-|          | CV   |        |        |       |        |               |             |
+|Jumlah Epoch| IV   |Intensitas Pelatihan|Nilai numerik iterasi|ratio|epoch|Menentukan jumlah perulangan saat training model.|Epoch adalah parameter kunci yang menentukan seberapa baik model belajar dari data.|
+|Akurasi Klasifikasi| DV   |Performa Model|  Accuracy Score |ratio |persen (%)|Rasio prediksi benar dibanding total data uji.|Metrik standar untuk mengukur efektivitas model klasifikasi citra.|
+|Arsitektur Model    | CV   |Struktur Jaringan|InceptionV3|Nominal|  -      |Mengunci model agar tetap menggunakan satu arsitektur.               |Agar perubahan hasil murni karena epoch, bukan karena perbedaan struktur model. |
 
 Alignment Check:
   RQ → Concept → Variable → Metric → Data → Result
-  [ ] Setiap langkah terdokumentasi
-  [ ] Tidak ada "lompatan logis"
-  [ ] Metrik mengukur apa yang dimaksud (construct validity)
+  [X] Setiap langkah terdokumentasi
+  [X] Tidak ada "lompatan logis"
+  [X] Metrik mengukur apa yang dimaksud (construct validity)
 ```
 
 ---
@@ -91,11 +90,11 @@ Gunakan RQ dari WS-04. Definisikan variabel dan metriknya.
 
 | Variabel | Tipe | Konsep Abstrak | Metrik Konkret | Skala (NOIR) | Satuan |
 |----------|------|---------------|----------------|-------------|--------|
-| *Contoh: Jenis model* | *IV* | *Pendekatan klasifikasi* | *Categorical: CNN vs RF* | *Nominal* | *—* |
-| | DV | | | | |
-| | CV | | | | |
+| Iterasi Pelatihan | IV | Durasi Belajar | 10, 20, 30 Epoch| ratio |epoch |
+|Ketepatan Prediksi | DV |Kualitas Klasifikasi |Overall Accuracy |epoch |persen (%) |
+|Dataset & Spek | CV |Lingkungan Uji |1.500 citra & InceptionV3 |Nominal | - |
 
-**Apakah ada lompatan logis dalam rantai?** [ ] Ya / [ ] Tidak
+**Apakah ada lompatan logis dalam rantai?** [ ] Ya / [X] Tidak
 > Jika ya, di mana? ____________________________________
 
 ---
@@ -106,9 +105,9 @@ Evaluasi metrik DV yang dipilih di Latihan 1 menggunakan 3 kriteria.
 
 | Kriteria | Skor (1-5) | Justifikasi |
 |----------|-----------|-------------|
-| Representative | *Contoh: 4 — F1-Score mewakili keseimbangan precision-recall* | |
-| Sensitive | | |
-| Feasible | | |
+| Representative | 5 |Akurasi secara langsung mewakili kemampuan model membedakan penyakit padi.|
+| Sensitive | |Cukup peka untuk melihat kenaikan performa dari 10 ke 30 epoch (74% ke 93%).|
+| Feasible | |Sangat mudah dikumpulkan melalui library seperti Keras atau TensorFlow setelah training selesai. |
 
 **Apakah perlu secondary metric?** [ ] Ya / [ ] Tidak
 > Jika ya, apa dan mengapa? _____________________________
@@ -124,10 +123,10 @@ Bayangkan data yang akan dikumpulkan dari eksperimen. Evaluasi 4 dimensi kualita
 
 | Dimensi | Pertanyaan | Jawaban | Strategi Mitigasi |
 |---------|-----------|---------|------------------|
-| Completeness | *Apakah semua data point terkumpul?* | | |
-| Consistency | *Apakah ada kontradiksi internal?* | | |
+| Completeness | *Apakah semua data point terkumpul?* |Ya, semua 1.500 citra harus terproses |Melakukan checking jumlah file sebelum dan sesudah preprocessing. |
+| Consistency | *Apakah ada kontradiksi internal?* |Mungkin ada label ganda. |Melakukan checking jumlah file sebelum dan sesudah preprocessing. |
 | Validity | *Apakah benar-benar mengukur yang dimaksud?* | | |
-| Representativeness | *Apakah sampel mewakili populasi target?* | | |
+| Representativeness | *Apakah sampel mewakili populasi target?* |Ya, mewakili 3 penyakit utama. |Memastikan distribusi jumlah gambar seimbang antar kelas (500 tiap kelas). |
 
 ---
 
@@ -135,6 +134,6 @@ Bayangkan data yang akan dikumpulkan dari eksperimen. Evaluasi 4 dimensi kualita
 
 > Mengapa memilih metrik setelah melihat data dianggap p-hacking? Apa bedanya dengan eksplorasi data yang sah?
 
+
 **Jawaban:**
-> ___________________________________________________
-> ___________________________________________________
+> Memilih metrik setelah melihat data dianggap p-hacking karena peneliti cenderung hanya akan memilih metrik yang menunjukkan hasil "bagus" atau "signifikan" (misal: hanya melaporkan akurasi tetapi menyembunyikan loss yang buruk) demi memenangkan hipotesis. Perbedaannya dengan eksplorasi data yang sah adalah pada niat dan pelaporannya: eksplorasi data bertujuan mencari pola baru untuk penelitian masa depan tanpa mengubah kesimpulan hipotesis utama, sedangkan p-hacking adalah manipulasi pelaporan untuk memvalidasi hipotesis yang sebenarnya gagal.
