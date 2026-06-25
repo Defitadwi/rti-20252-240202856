@@ -70,22 +70,23 @@ EXECUTION PLAN
 
 | Run # | Skenario | Seed | Parameter | Status | Waktu | Output File |
 |-------|----------|------|-----------|--------|-------|-------------|
-| 1     |          |      |           |        |       |             |
-| 2     |          |      |           |        |       |             |
-| 3     |          |      |           |        |       |             |
-| ...   |          |      |           |        |       |             |
+| 1     | InceptionV3 Base | 42   | Epoch=75, BS=32, Aug=0.25 | Planned | 45 Mins | log_run_001.json |
+| 2     | InceptionV3 Base | 123  | Epoch=75, BS=32, Aug=0.25 | Planned | 45 Mins | log_run_002.json |
+| 3     | InceptionV3 Base | 999  | Epoch=75, BS=32, Aug=0.25 | Planned | 45 Mins | log_run_003.json |
+| 4     | InceptionV3 Base | 777  | Epoch=75, BS=32, Aug=0.25 | Planned | 45 Mins | log_run_004.json |
+| 5     | InceptionV3 Base | 2026 | Epoch=75, BS=32, Aug=0.25 | Planned | 45 Mins | log_run_005.json |
 
-Jumlah runs per skenario : ____
-Total runs               : ____
+Jumlah runs per skenario :5 Run (Seed berbeda untuk validasi statistik berkelanjutan)
+Total runs               : 5 Run
 
 DATA LOG (per run):
-  Run ID    : ____________________
-  Timestamp : ____________________
-  Skenario  : ____________________
-  Input     : ____________________
-  Output    : ____________________
-  Anomali   : ____________________
-  Catatan   : ____________________
+  Run ID    : RICE-INCEPTIONV3-RUN001
+  Timestamp : 2026-06-24T09:00:00+07:00
+  Skenario  : Evaluasi Reproduksibilitas Arsitektur InceptionV3 pada Daun Padi
+  Input     : 1.630 Citra Daun Padi (Resized 299x299, Augmentasi Kecerahan 25%)
+  Output    : File model `rice_leaf_inceptionv3_run001.h5` & Metrik Akurasi Akhir
+  Anomali   : Tidak ditemukan / Terjadi Thermal Throttling minor pada Epoch > 50
+  Catatan   : Dijalankan langsung melalui Terminal Terintegrasi VS Code
 ```
 
 ---
@@ -96,15 +97,15 @@ Susun execution plan untuk eksperimen Anda. Tentukan skenario, jumlah run, dan s
 
 | Run # | Skenario | Seed | Parameter Kunci | Status |
 |-------|----------|------|----------------|--------|
-| *1* | *Contoh: BERT-base, DS-1* | *42* | *lr=2e-5, epoch=10* | *Planned* |
-| *2* | *BERT-base, DS-1* | *123* | *lr=2e-5, epoch=10* | *Planned* |
-| 3 | | | | |
-| 4 | | | | |
-| 5 | | | | |
+| 1 | InceptionV3 Daun Padi | 42| Epoch=75, Batch Size=32 | Planned|
+| 2 | InceptionV3 Daun Padi | 123| Epoch=75, Batch Size=32 |Planned |
+| 3 |InceptionV3 Daun Padi |999 |Epoch=75, Batch Size=32 |Planned |
+| 4 |InceptionV3 Daun Padi |777| |Epoch=75, Batch Size=32 |Planned|
+| 5 |InceptionV3 Daun Padi |2026 |Epoch=75, Batch Size=32 |Planned |
 
-**Total skenario:** ____
-**Run per skenario:** ____
-**Total run keseluruhan:** ____
+**Total skenario:** 1 Skenario Utama (InceptionV3 Base)
+**Run per skenario:** 5 Run dengan Seed Berbeda
+**Total run keseluruhan:** 5 Run
 
 ---
 
@@ -115,25 +116,25 @@ Desain format data log untuk eksperimen Anda. Tentukan field apa saja yang akan 
 **Identitas:**
 | Field | Contoh |
 |-------|--------|
-| Run ID | *run-001* |
-| Timestamp | *2025-03-15T10:30:00* |
-| | |
+| Run ID | rice-leaf-cnn-001 |
+| Timestamp | 2026-06-24T09:45:00 |
+|Platform Environment |VS Code Terminal (Python 3.12.10, TensorFlow 2.15.0) |
 
 **Konfigurasi:**
 | Field | Contoh |
 |-------|--------|
 | Seed | *42* |
-| Code version | *commit abc1234* |
-| | |
+| Code version | commit f752a44 |
+|Hyperparameters |commit f752a44 |
 
 **Hasil:**
 | Metrik | Tipe Data | Range Valid |
 |--------|----------|-------------|
-| *Contoh: Accuracy* | *float* | *0.0 – 1.0* |
-| | | |
-| | | |
-
-**Format output:** [ ] CSV / [ ] JSON / [ ] Database / [ ] Lainnya: ____
+| Training Accuracy | *float* | 0.0 – 1.0 (Target: ~0.99) |
+| Validation Accuracy| *float*  |0.0 – 1.0 (Target Jurnal: ~0.9734) |
+| Validation Loss| *float*  |≥ 0.0 (Target Jurnal: ~0.7853) |
+|Execution Time|  *float* |Jam/Menit (Estimasi per run: ± 45 menit via CPU)
+**Format output:** [ ] CSV / [X] JSON / [ ] Database / [ ] Lainnya: ____
 
 ---
 
@@ -143,10 +144,10 @@ Rencanakan bagaimana menangani anomali. Untuk setiap jenis, tentukan langkah yan
 
 | Jenis Anomali | Contoh | Tindakan |
 |---------------|--------|----------|
-| Run gagal (crash) | *Contoh: OOM pada batch_size=64* | *Contoh: Dokumentasi, re-run batch_size=32, catat perubahan* |
-| Hasil ekstrem | | |
-| Waktu eksekusi anomali | | |
-| Inkonsistensi dengan run lain | | |
+| Run gagal (crash) | Laptop Mengalami OOM saat memuat 1.630 gambar sekaligus. | Dokumentasikan eror, bersihkan session (backend.clear_session()), aktifkan fitur TensorFlow Memory Growth, atau gunakan tf.data.Dataset generator untuk memuat data secara bertahap.|
+| Hasil ekstrem |Akurasi tiba-tiba jatuh ke 33% (seperti tebakan acak pada 3 kelas). |Selidiki apakah terjadi kebocoran data gradients (exploding gradients), dokumentasikan grafik loss, dan turunkan learning rate model melalui file konfigurasi. |
+| Waktu eksekusi anomali |Satu epoch memakan waktu > 5 menit akibat laptop panas (thermal throttling). |Hentikan training sementara, lakukan pendinginan laptop Lenovo, dokumentasikan lonjakan suhu, dan jalankan ulang pengujian di kondisi suhu ruangan stabil. |
+| Inkonsistensi dengan run lain |Run 3 menghasilkan akurasi yang terpaut jauh dibanding Run 1 dan Run 2. |Cari tahu apakah urutan pengacakan data generator tidak sengaja berubah, dokumentasikan distribusinya, dan jangan hapus data tersebut melainkan laporkan sebagai deviasi standar riset. |
 
 **Prinsip:** Detect → Investigate → Document → Decide
 
@@ -157,6 +158,8 @@ Rencanakan bagaimana menangani anomali. Untuk setiap jenis, tentukan langkah yan
 > Pernahkah Anda melaporkan hasil riset/tugas dari single run? Apa risikonya? Bagaimana multiple run mengubah kepercayaan terhadap hasil?
 
 **Pengalaman sebelumnya:**
-> ___________________________________________________
+> Ya, dalam pengerjaan tugas-tugas pemrograman, basis data, atau analisis statistik sederhana sebelumnya, saya sering kali hanya melakukan satu kali eksekusi (single run) kode program. Jika program sudah berjalan tanpa error dan menghasilkan angka akurasi yang dirasa cukup bagus, saya langsung menyalin hasilnya ke dalam laporan.
+Risikonya adalah bias eksperimen yang sangat tinggi. Angka keberhasilan dari single run bisa jadi hanyalah sebuah kebetulan (fluke) karena model kebetulan mendapatkan pembagian bobot awal acak yang menguntungkan. Riset seperti ini tidak memiliki fondasi ilmiah yang valid karena tingkat reproduksibilitasnya rendah—ketika program dijalankan ulang oleh orang lain, hasilnya bisa drop secara drastis.
 **Yang akan dilakukan berbeda:**
-> ___________________________________________________
+> Mulai dari eksperimen klasifikasi daun padi ini, saya akan menerapkan protokol Multiple Run secara ketat (minimal 5 kali running dengan mengunci variasi random seed yang berbeda di setiap run).
+Pendekatan multiple run ini mengubah total tingkat kepercayaan hasil riset karena saya tidak lagi menyajikan satu angka mutlak secara naif. Saya dapat menghitung nilai rata-rata (mean), standar deviasi, hingga melihat distribusi error-nya. Hal ini membuktikan secara ilmiah bahwa akurasi tinggi yang dihasilkan oleh arsitektur InceptionV3 (~97.34%) murni karena keandalan konfigurasi sistem yang saya bangun, bukan karena faktor keberuntungan komputasi semata.
