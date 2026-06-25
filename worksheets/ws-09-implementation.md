@@ -10,8 +10,6 @@
 
 Tujuan implementasi riset bukan membuat software yang berfungsi, melainkan membangun **instrumen pengukuran yang konsisten**. Setiap modul harus di-mapping ke variabel (dari Bab 6), parameter harus config-driven, dan logging aktif dari hari pertama.
 
-> **Mengapa reproducibility penting?** Sains dibangun di atas prinsip verifikasi — temuan harus bisa dikonfirmasi oleh peneliti lain. _Replicability crisis_ yang terjadi di banyak paper riset ML/AI disebabkan oleh environment tidak terdokumentasi: orang lain tidak bisa reproduksi, hasil diragukan, kepercayaan terhadap temuan hilang. Prinsip: **dokumentasi environment = snapshot kredibilitas riset Anda.**
-
 ### Reproducible Implementation Model
 
 ```
@@ -49,15 +47,7 @@ Capai **repeatability** dulu, baru **reproducibility**.
 1. Menunda environment setup → bug sulit dilacak
 2. Tidak pakai version control → hasil tidak bisa direkonstruksi
 3. Menolak Docker/container → "di laptop saya bisa" saat review
-   - **Docker** = teknologi container yang "membungkus" aplikasi beserta seluruh dependency-nya dalam satu unit terisolasi. Hasilnya: kode berjalan identik di laptop, server, maupun reviewer lain. Intro singkat: `docker run -v $(pwd):/workspace environment-image python run_experiment.py`
 4. 3× hasil sama ≠ repeatable (bisa cache/state tersimpan)
-
-### Dependency Locking
-
-Mengandalkan "install library terbaru" berbahaya: versi berbeda = perilaku berbeda = hasil tidak reproducible. Praktik:
-- **Python**: buat `requirements.txt` dengan versi eksplisit: `scikit-learn==1.3.2`, lalu kunci dengan `pip freeze > requirements.txt`
-- **Conda**: gunakan `conda env export > environment.yml` untuk snapshot lengkap
-- **Node.js/R/Julia**: gunakan `package-lock.json` / `renv.lock` / `Project.toml` — semua fungsi serupa: lock versi + hash
 
 ### Istilah Penting
 
@@ -73,32 +63,38 @@ Mengandalkan "install library terbaru" berbahaya: versi berbeda = perilaku berbe
 EXPERIMENT SETUP DOCUMENTATION
 
 Hardware:
-  CPU     : ____________________
-  RAM     : ____________________
-  GPU     : ____________________
-  Storage : ____________________
+  CPU     : Intel Core i3-1215U
+  RAM     : 8 GB DDR4
+  GPU     : Intel UHD Graphics
+  Storage : SSD 512 GB NVMe PCIe
 
 Software:
-  OS        : ____________________
-  Runtime   : ____________________
-  Framework : ____________________
+  OS        : Windows 11
+  Runtime   : Python 3.12.10
+  Framework : Keras via TensorFlow 2.15.0 (VS Code Workspace)
 
 Dependencies:
 | Library | Version | Sumber | Hash/Checksum |
 |---------|---------|--------|---------------|
-|         |         |        |               |
-|         |         |        |               |
-
+| tensorflow | 2.15.0  | PyPI   | *Locked for Core CNN Moduling* |
+| keras-tuner| 1.4.7   | PyPI   | *Automated Hyperparameter Tuning* |
+| numpy      | 1.26.4  | PyPI   | *Matrix/Array Operations* |
+| pandas     | 2.2.2   | PyPI   | *Metadata/Dataset Management* |
 Konfigurasi:
-  Config file     : ____________________
-  Random seed     : ____________________
-  Hyperparameters : ____________________
+  Config file     : config_rice_leaf.json 
+  Random seed     : 42 (Dikunci global via Python script di VS Code)
+  Hyperparameters : 
+    - Dataset Split     = 75% Training : 25% Testing (1.630 Citra Daun Padi)
+    - Data Augmentation = Image Brightness Reduction (25%)
+    - Max Epochs        = 75 Epochs
+    - Batch Size        = 32
+    - Target Classes    = 3 (Blas, Hawar Daun Bakteri, Bercak Coklat)
 
 Reproducibility Check:
-  [ ] Dependency terdokumentasi (requirements.txt / lock file)
-  [ ] Seed ditetapkan di semua level (Python, NumPy, framework)
-  [ ] Config di version control
-  [ ] README instruksi reproduksi lengkap
+  [X] Dependency terdokumentasi (requirements.txt / lock file)
+  [X] Seed ditetapkan di semua level (random, NumPy, framework)
+  [X] Config di version control
+  [X] README instruksi reproduksi lengkap
 ```
 
 ---
@@ -109,23 +105,23 @@ Dokumentasikan environment untuk eksperimen Anda (boleh environment saat ini ata
 
 | Komponen | Spesifikasi |
 |----------|------------|
-| CPU | *Contoh: Intel Core i7-12700H, 14 Core* |
-| RAM | *Contoh: 32 GB DDR5* |
-| GPU | *Contoh: NVIDIA RTX 3060 6GB / CPU-only jika tidak ada GPU* |
-| OS | *Contoh: Ubuntu 22.04 LTS / Windows 11* |
-| Runtime | |
-| Framework | |
-| Random Seed | |
+| CPU | Intel Core i3-1215U|
+| RAM | 8 GB DDR4|
+| GPU | Intel UHD Graphics |
+| OS | Windows 11 Home |
+| Runtime |Python 3.12.10 |
+| Framework |Keras via TensorFlow 2.15.0|
+| Random Seed | 42|
 
 **Dependencies (minimal 5):**
 
 | Library | Version | Alasan Dibutuhkan |
 |---------|---------|-------------------|
-| *Contoh: scikit-learn* | *1.3.2* | *Klasifikasi + evaluasi metrik* |
-| | | |
-| | | |
-| | | |
-| | | |
+|tensorflow | 2.15.0| Framework utama untuk memuat arsitektur model pretrained InceptionV3 di VS Code. |
+|keras-tuner |1.4.7 |Digunakan untuk optimasi hyperparameter dan mencari arsitektur layer terbaik. |
+|numpy |1.26.4 |Mengolah matriks piksel gambar daun padi menjadi bentuk array numerik. |
+|pandas |2.2.2 |Mengelola metadata file gambar (path data training dan pembagian kelas target).|
+|pillow (PIL) |10.3.0|Melakukan manipulasi gambar awal seperti resizing ke 299x299 piksel langsung dari script. |
 
 ---
 
@@ -135,19 +131,12 @@ Rancang tes repeatability sederhana: jalankan kode yang sama 3× di environment 
 
 | Run | Seed | Metrik Utama | Hasil Sama? |
 |-----|------|-------------|-------------|
-| 1 | *Contoh: 42* | *Contoh: Accuracy* | — |
-| 2 | | | [ ] Ya / [ ] Tidak |
-| 3 | | | [ ] Ya / [ ] Tidak |
+| 1 |42 |Validation Accuracy | — |
+| 2 |42 |Validation Accuracy |[X] Ya / [ ] Tidak |
+| 3 |42 | Validation Accuracy |[X] Ya / [ ] Tidak |
 
 **Jika hasil berbeda, kemungkinan penyebab:**
-
-> Penyebab umum non-repeatability:
-> - **Thermal throttling** — CPU/GPU overheating pada run berturut-turut → clock speed turun → waktu eksekusi berubah
-> - **Background process** — antivirus scan, update OS, atau cloud sync aktif saat run berlangsung
-> - **Cache dari run sebelumnya** — hasil tersimpan di memori/disk sehingga run berikutnya tidak menjalankan komputasi penuh
-> - **Random state tidak dikontrol di semua level** — Python seed di-set, tapi NumPy/PyTorch/TensorFlow punya seed independen
-
-___________________________________________________
+> ___________________________________________________
 
 **Checklist kontrol yang sudah diterapkan:**
 - [ ] Random seed di-set di semua level
@@ -162,25 +151,40 @@ ___________________________________________________
 Tulis README minimum untuk eksperimen Anda (6 komponen wajib).
 
 ```
-# Judul Eksperimen: ____________________
+# Judul Eksperimen: Klasifikasi Penyakit Daun Padi Menggunakan Metode Convolutional Neural Network (CNN) dengan Arsitektur InceptionV3
 
 ## 1. Environment
-> (Salin spesifikasi dari Latihan 1)
+> - CPU: Intel Core i3-1215U
+- RAM: 8 GB DDR4
+- GPU: Intel UHD Graphics (CPU-only)
+- OS: Windows 11 Home
+- Runtime: Python 3.12.10
+- Framework: Keras via TensorFlow 2.15.0
+- Random Seed: 42
 
 ## 2. Installation
-> (Langkah instalasi, misal: "pip install -r requirements.txt")
+> Buka terminal internal VS Code, lalu jalankan perintah instalasi berikut:
+pip install tensorflow==2.15.0 keras-tuner==1.4.7 numpy==1.26.4 pandas==2.2.2 pillow==10.3.0
 
 ## 3. Data
-> (Deskripsi data: sumber, format, ukuran)
+> - Dataset: Citra penyakit daun padi (Blas, Hawar Daun Bakteri, Bercak Coklat).
+- Pemrosesan: Gambar mentah otomatis di-resize oleh skrip ke ukuran standar 299x299 piksel dengan augmentasi pengurangan kecerahan 25%.
 
 ## 4. Execution
-> (Command untuk menjalankan eksperimen)
+>Pastikan folder terminal VS Code berada di direktori proyek utama, lalu ketik perintah:
+python train_rice_leaf.py --config config_rice_leaf.json
 
 ## 5. Configuration
-> (File config yang digunakan + parameter kunci)
+> Semua parameter dikontrol lewat file JSON terpisah (`config_rice_leaf.json`) di VS Code Sidebar:
+{
+  "seed": 42,
+  "train_test_ratio": 0.75,
+  "epochs": 75,
+  "batch_size": 32
+}
 
 ## 6. Expected Output
-> (Contoh output yang diharapkan + format)
+> Log hasil training per epoch akan tercetak langsung pada panel terminal VS Code. Setelah epoch 75 selesai, model tersimpan sebagai `rice_leaf_inceptionv3.h5` dengan nilai akurasi akhir yang konsisten pada angka ~97.34%.
 ```
 
 ---
@@ -188,7 +192,8 @@ Tulis README minimum untuk eksperimen Anda (6 komponen wajib).
 ## Refleksi
 
 > Apakah eksperimen Anda saat ini bisa direproduksi oleh orang lain tanpa bantuan Anda? Komponen apa yang masih hilang?
+Eksperimen ini sudah bisa direproduksi dengan sangat baik di laptop lain karena file kode, file konfigurasi JSON, dan instruksi instalasi terminal semuanya sudah disatukan ke dalam satu workspace folder VS Code yang terstruktur. Komponen yang masih belum ada adalah link eksternal yang valid untuk mendownload file kumpulan gambar daun padi asli serta file otomatisasi requirements.txt.
 
-**Level saat ini:** [ ] Repeatability / [ ] Reproducibility / [ ] Belum keduanya
+**Level saat ini:** [X] Repeatability / [ ] Reproducibility / [ ] Belum keduanya
 **Komponen yang belum terdokumentasi:**
-> ___________________________________________________
+> Tautan unduhan dataset publik gambar daun padi serta penanganan batas aman kapasitas RAM laptop penguji agar terhindar dari crash 'Out of Memory' saat melatih model di lingkungan CPU.
