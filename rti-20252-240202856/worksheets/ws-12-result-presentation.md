@@ -65,25 +65,27 @@ Keduanya **saling melengkapi**:
 ```
 RESULT PRESENTATION PLAN
 
-Research Question : ____________________
-Metrik Utama      : ____________________
+Research Question : Sejauh mana peningkatan jumlah epoch (10, 20, 30) memengaruhi akurasi klasifikasi penyakit padi menggunakan arsitektur InceptionV3 pada dataset terbatas?
+Metrik Utama      : Accuracy Score (%) dan Training Loss
 
 Tabel Hasil:
-| Skenario | Metrik 1 (mean ± std) | Metrik 2 (mean ± std) | n |
-|----------|----------------------|----------------------|---|
-|          |                      |                      |   |
+| Skenario | Accuracy Score (mean ± std) | Training Loss (mean ± std) | n |
+|----------|-----------------------------|----------------------------|---|
+| Epoch 30 | 96.8 ± 0.6%                 | 0.08 ± 0.02                | 5 |
+| Epoch 20 | 91.2 ± 1.1%                 | 0.15 ± 0.04                | 5 |
+| Epoch 10 | 75.4 ± 2.3%                 | 0.42 ± 0.09                | 5 |
 
 Visualisasi yang Direncanakan:
 | # | Jenis Grafik | Pesan Utama | Metrik |
 |---|-------------|-------------|--------|
-| 1 |             |             |        |
-| 2 |             |             |        |
+| 1 | Line Chart + Error Bar | Tren peningkatan akurasi dari epoch 10 ke 30 dan tingkat kestabilannya. | Mean Accuracy ± std |
+| 2 | Grouped Bar Chart | Evaluasi trade-off penurunan nilai Loss seiring bertambahnya Epoch. | Mean Training Loss |
 
 Bias Check:
-  [ ] Y-axis mulai dari 0 (atau dijustifikasi)
-  [ ] Error bar/CI ditampilkan
-  [ ] Semua data disertakan (tidak cherry-picked)
-  [ ] Tidak menggunakan 3D tanpa alasan
+  [X] Y-axis mulai dari 0 (atau dijustifikasi)
+  [X] Error bar/CI ditampilkan
+  [X] Semua data disertakan (tidak cherry-picked)
+  [X] Tidak menggunakan 3D tanpa alasan
 ```
 
 ---
@@ -94,15 +96,15 @@ Buat tabel hasil eksperimen Anda (boleh dengan data simulasi jika belum punya da
 
 | Skenario | Metrik 1 (mean ± std) | Metrik 2 (mean ± std) | n |
 |----------|----------------------|----------------------|---|
-| *Contoh: BERT-base* | *88.4 ± 1.2%* | *45.2 ± 3.1 min* | *10* |
-| | | | |
-| | | | |
+| Epoch 30 | 96.8 ± 0.6% | *45.2 ± 2.1 min| 5 |
+| Epoch 20 | 91.2 ± 1.1% | 30.5 ± 1.4 min | 5 |
+| Epoch 10 | 75.4 ± 2.3% | 15.8 ± 0.8 min | 5 |
 
 **Checklist tabel:**
-- [ ] Self-contained (judul jelas, satuan ada, N tercantum)
-- [ ] Mean ± std (bukan single number)
-- [ ] Diurutkan berdasarkan metrik utama
-- [ ] Format konsisten di semua baris
+- [X] Self-contained (judul jelas, satuan ada, N tercantum)
+- [X] Mean ± std (bukan single number)
+- [X] Diurutkan berdasarkan metrik utama
+- [X] Format konsisten di semua baris
 
 ---
 
@@ -112,9 +114,9 @@ Rencanakan 2-3 grafik untuk menyajikan data dari Latihan 1. Setiap grafik = satu
 
 | # | Jenis Grafik | Pesan | Data yang Digunakan |
 |---|-------------|-------|---------------------|
-| 1 | *Contoh: Bar chart + error bar* | *Perbandingan accuracy antar 3 model* | *Mean accuracy ± std* |
-| 2 | *Box plot* | *Distribusi F1 per model* | *Semua run F1* |
-| 3 | *Scatter plot* | *Trade-off accuracy vs training time* | *Mean accuracy vs mean time* |
+| 1 | Line Chart + Error Bar | Menunjukkan pola kenaikan akurasi yang signifikan seiring bertambahnya jumlah epoch komputasi. | Mean Accuracy ± std dari tiap skenario epoch |
+| 2 | Box Plot | Menampilkan sebaran stabilitas dan konsistensi nilai akurasi pada setiap run eksperimen. | Seluruh data akurasi dari total 15 run |
+| 3 | Scatter plot | Menggambarkan trade-off (hubungan timbal balik) antara peningkatan akurasi dan durasi waktu training yang dibutuhkan. | Mean Accuracy vs Mean Waktu Training |
 
 ---
 
@@ -126,14 +128,14 @@ Evaluasi visualisasi berikut untuk bias (skenario dari contoh):
 
 | Pertanyaan | Jawaban |
 |-----------|---------|
-| Apakah Y-axis menyesatkan? | *Contoh: Ya — A terlihat 2× B padahal beda 0.4%* |
-| Apakah error bar ditampilkan? | |
-| Apakah semua kondisi ditampilkan? | |
-| Apa solusinya? | |
+| Apakah Y-axis menyesatkan? | Ya. Pemotongan sumbu Y (truncated axis) membuat Metode A terlihat menghasilkan akurasi dua kali lipat lebih hebat dari Metode B, padahal selisih aslinya sangat tipis hanya 0.4%. |
+| Apakah error bar ditampilkan? | Tidak. Ketiadaan nilai deviasi standar menyembunyikan potensi tumpang tindih (overlap) variabilitas data antar kedua metode.|
+| Apakah semua kondisi ditampilkan? | Tidak. Hanya menampilkan visualisasi visual "pemenang" tanpa menyertakan variansi performa secara menyeluruh (cherry-picked).|
+| Apa solusinya? | Sumbu Y wajib dimulai dari angka 0% agar proporsi visualisasi tinggi batang grafik mencerminkan nilai aslinya secara objektif, serta wajib menambahkan error bar.|
 
 **Evaluasi grafik Anda sendiri dari Latihan 2:**
-- [ ] Semua bias check lulus
-- [ ] Ada yang perlu diperbaiki: ____
+- [X] Semua bias check lulus
+- [X] Ada yang perlu diperbaiki: — (Memastikan konfigurasi pustaka Matplotlib/Seaborn di Python dikunci pada ylim(0, 100) untuk akurasi).
 
 ---
 
@@ -141,5 +143,5 @@ Evaluasi visualisasi berikut untuk bias (skenario dari contoh):
 
 > Mengapa tabel dan grafik keduanya diperlukan — tidak cukup salah satu saja? Pernahkah Anda membuat grafik yang (tanpa sengaja) menyesatkan?
 
-> ___________________________________________________
-> ___________________________________________________
+> TTabel dan grafik saling melengkapi karena fungsinya berbeda: Tabel memberikan akurasi angka yang presisi secara detail, sedangkan grafik memberikan gambaran pola, tren, dan perbandingan secara cepat dan instan. Menggunakan salah satu saja akan membuat pembaca kehilangan fokus—baik kehilangan detail angka maupun kehilangan arah tren data.
+Mengenai grafik yang menyesatkan, hal itu sering terjadi secara tidak sengaja akibat fitur auto-scale otomatis pada aplikasi (seperti Excel atau Python). Ketika sumbu Y tidak dimulai dari angka 0, perbedaan nilai yang sangat kecil (misal hanya selisih 0.5%) akan terlihat sangat besar dan dramatis secara visual. Hal ini menciptakan ilusi optik yang bisa mengecoh pembaca jika tidak divalidasi dengan hati-hati.

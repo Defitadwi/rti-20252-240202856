@@ -1,30 +1,23 @@
 # 06-output
 
-Hasil olahan data & visualisasi — **Tahap 4** (lihat [../09-docs/tahap-4-analisis-data.md](../09-docs/tahap-4-analisis-data.md)).
+Hasil olahan data, visualisasi performa model, dan log eksperimen — **Tahap 5** (Analisis Performa Model).
 
-Dihasilkan oleh `05-kode/analysis/run_all.py` dari data mentah `04-data/` (matrix 400 run, 40 replikasi).
+Dihasilkan oleh skrip eksekusi di `05-kode/src/` berdasarkan dataset dari `04-data/`.
 
-## tables/
-
-| File | Isi |
-|---|---|
-| `descriptive_stats.csv` | Statistik deskriptif (latensi avg/p90/p95/max, RPS, failed/checks rate) per (cache_mode, traffic_variant), mean±std atas 40 replikasi |
-| `descriptive_stats_mixed_scenarios.csv` | Breakdown latensi legitimate vs attack untuk traffic_variant `mixed-unique`/`mixed-pool` |
-| `dperf.csv` | $D_{perf}$ = (T_hybrid − T_none) / T_none × 100% untuk traffic legitimate (baseline & dalam mixed) |
-| `resource_usage.csv` | CPU% & memori (MiB) mean/max per (cache_mode, traffic_variant, container) |
-| `mitigation_effectiveness.csv` | Metrik efektivitas mitigasi dari delta `/metrics` gateway (db queries, cache hit ratio, rate-limit blocked, auth outcome) |
-| `db_query_reduction.csv` | Penurunan total query Postgres hybrid vs none per traffic_variant |
-
-## figures/
+## Log Eksperimen (`logs/`)
 
 | File | Isi |
-|---|---|
-| `fig_latency_p95.png` | Bar chart `http_req_duration` p95 per traffic_variant: none vs hybrid (mean±std, log scale) |
-| `fig_dperf.png` | Bar chart $D_{perf}$ (avg & p95) untuk 3 perbandingan traffic legitimate |
-| `fig_db_queries_reduction.png` | Bar chart total query Postgres per run: none vs hybrid (log scale) |
-| `fig_postgres_cpu.png` | Bar chart CPU% rata-rata container `gateway-postgres-1`: none vs hybrid |
-| `fig_resource_timeseries.png` | Time-series CPU% `gateway-postgres-1` selama `mixed-pool` rep1: none vs hybrid |
+| :--- | :--- |
+| `eksperimen-log.md` | Catatan otomatis riwayat parameter training, durasi, dan loss setiap epoch. |
 
-## Acuan
+## Visualisasi Data (`figures/`)
 
-[../09-docs/tahap-4-analisis-data.md](../09-docs/tahap-4-analisis-data.md)
+| File | Isi |
+| :--- | :--- |
+| `grafik_akurasi_inception.png` | Kurva pembelajaran (*learning curve*) akurasi training vs validasi untuk arsitektur Inception V3. |
+| `hasil_terminal_riset.png` | Tangkapan layar (*screenshot*) bukti eksekusi dan kestabilan training 25 epoch dari terminal. |
+
+## Catatan Tambahan
+
+* **Konvergensi Cepat:** Berdasarkan grafik, model mencapai akurasi maksimal (1.0000) sejak epoch ke-3, menunjukkan efisiensi transfer learning Inception V3 pada dataset penyakit daun padi.
+* Data di folder ini digunakan sebagai dasar argumentasi dalam bab pembahasan di dokumen akhir laporan ilmiah.

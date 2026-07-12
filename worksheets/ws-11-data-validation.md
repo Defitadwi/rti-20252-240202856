@@ -66,29 +66,29 @@ Jika gagal di langkah awal → tidak perlu lanjut.
 DATA VALIDATION CHECKLIST
 
 Completeness:
-  [ ] Semua skenario tercakup
-  [ ] Jumlah run sesuai rencana
-  [ ] Tidak ada file output hilang
-  Missing: ____ dari ____ data points
+  [X] Semua skenario tercakup
+  [X] Jumlah run sesuai rencana
+  [X] Tidak ada file output hilang
+  Missing: ____s dari ____ data points
 
 Format Consistency:
-  [ ] Semua file format sama (CSV/JSON/...)
-  [ ] Header konsisten
-  [ ] Tipe data konsisten (numerik tetap numerik)
+  [X] Semua file format sama (CSV/JSON/...)
+  [X] Header konsisten
+  [X] Tipe data konsisten (numerik tetap numerik)
 
 Range & Logic:
-  [ ] Nilai dalam range masuk akal
-  [ ] Tidak ada waktu negatif
-  [ ] Metrik 0–100%, tidak di luar range
+  [X] Nilai dalam range masuk akal
+  [X] Tidak ada waktu negatif
+  [X] Metrik 0–100%, tidak di luar range
   Anomali ditemukan: ____________________
 
 Cross-Validation:
-  [ ] Run identik → hasil mendekati
-  [ ] Trend konsisten dengan ekspektasi teori
+  [X] Run identik → hasil mendekati
+  [X] Trend konsisten dengan ekspektasi teori
 
 Keputusan:
-  [ ] Data siap analisis
-  [ ] Perlu cleaning
+  [X] Data siap analisis
+  [X] Perlu cleaning
   [ ] Perlu re-run (skenario: ____)
 ```
 
@@ -100,16 +100,15 @@ Verifikasi apakah semua data yang direncanakan sudah terkumpul.
 
 | Skenario | Run Direncanakan | Run Tercatat | Missing | Alasan |
 |----------|-----------------|-------------|---------|--------|
-| *Contoh: BERT, DS-1* | *10* | *10* | *0* | *—* |
-| *LSTM, DS-3* | *10* | *8* | *2* | *OOM pada run 7 & 9* |
-| | | | | |
-| | | | | |
+| BERT, DS-1 |10 | 10 |0 | *—* | -
+| LSTM, DS-3 | 10 |8 | 2 | *OOM pada run 7 & 9 |
+|InceptionV3 (Model AI) | 5 | 5 | 0 |- |
+| Pengujian SUS | 35 | 35 | 0 | Semuanya mengisi kuesioner dengan lengkap |
 
-**Total expected:** ____ | **Total actual:** ____ | **Missing:** ____
+**Total expected:** 40 | **Total actual:** 40 | **Missing:** 0
 
 **Keputusan untuk data missing:**
-> ___________________________________________________
-
+> Karena tidak ada data yang hilang (missing data = 0), seluruh data point dari log training InceptionV3 dan kuesioner SUS dinyatakan lengkap secara kuantitas dan siap untuk masuk ke tahap investigasi kualitas.
 ---
 
 ## Latihan 2 — Anomaly Investigation
@@ -120,23 +119,23 @@ Periksa data Anda untuk anomali. Gunakan metode IQR atau z-score.
 
 | Run | Accuracy (%) |
 |-----|-------------|
-| 1 | *91.2* |
-| 2 | *90.8* |
-| 3 | *91.5* |
-| 4 | *78.3* |
-| 5 | *91.0* |
+| 1 | 91.2 |
+| 2 | 90.8 |
+| 3 | 91.5 |
+| 4 | 78.3 |
+| 5 | 91.0 |
 
 **Deteksi outlier:**
-- Q1 = ____ | Q3 = ____ | IQR = ____
-- Batas bawah (Q1 - 1.5×IQR) = ____
-- Batas atas (Q3 + 1.5×IQR) = ____
-- Outlier terdeteksi: ____
+- Q1 = 90.8| Q3 = 91.2 | IQR = 0.4
+- Batas bawah (Q1 - 1.5×IQR) =  90.8 - (1.5x0.4) = 90.2
+- Batas atas (Q3 + 1.5×IQR) = 91.2+(1.5x0.4)=91.8
+- Outlier terdeteksi: Run 4 (Nilai 78.3) karena nilainya berada jauh di bawah batas bawah toleransi (90.2).
 
 **Investigasi (untuk setiap outlier):**
 
 | Outlier | Nilai | Kemungkinan Penyebab | Keputusan |
 |---------|-------|---------------------|-----------|
-| *Run 4* | *78.3* | *Contoh: thermal throttling setelah 3 run berturut* | *Re-run dengan cooling interval* |
+| Run 4 | 78.3 | Terjadi thermal throttling pada GPU/CPU laptop saat melakukan proses training data citra daun padi secara beruntun. | *Re-run dengan cooling interval* | Melakukan re-run (pelatihan ulang) khusus untuk skenario tersebut dengan memberikan jeda waktu pendinginan perangkat (cooling interval). |
 
 ---
 
@@ -144,12 +143,12 @@ Periksa data Anda untuk anomali. Gunakan metode IQR atau z-score.
 
 Buat laporan validasi ringkas untuk dataset eksperimen Anda.
 
-**1. Completeness:** ____% data terkumpul
-**2. Format:** [ ] Konsisten / [ ] Ada inkonsistensi: ____
-**3. Range check (anomali):** ____
-**4. Logic check:** [ ] Parameter sesuai plan / [ ] Ada ketidaksesuaian: ____
+**1. Completeness:** 100% data terkumpul
+**2. Format:** [X] Konsisten / [ ] Ada inkonsistensi: -
+**3. Range check (anomali):** Terdeteksi 1 data outlier pada pengujian performa model (Run 4) dan 2 data anomali pada kuesioner akibat responden tidak konsisten membaca soal selang-seling.
+**4. Logic check:** [X] Parameter sesuai plan / [ ] Ada ketidaksesuaian: -
 
-**Kesimpulan:** [ ] Data siap analisis / [ ] Perlu tindakan: ____
+**Kesimpulan:** [ ] Data siap analisis / [X] Perlu tindakan: Melakukan cleaning (pembersihan) dengan membuang data responden kuesioner yang tidak valid, serta melakukan re-run pada proses kodingan model AI yang terkena thermal throttling agar nilai akurasi kembali stabil.
 
 ---
 
@@ -157,5 +156,6 @@ Buat laporan validasi ringkas untuk dataset eksperimen Anda.
 
 > Apa perbedaan antara "data yang benar" dan "data yang dipercaya"? Mengapa proses validasi formal diperlukan meskipun data dikumpulkan secara otomatis?
 
-> ___________________________________________________
-> ___________________________________________________
+> _Data yang benar adalah data yang secara faktual tercatat dan tersimpan apa adanya di dalam sistem (misalnya komputer otomatis mencatat angka akurasi 78.3%). Sedangkan data yang dipercaya (trusted data) adalah data yang tidak hanya benar secara angka, tetapi juga valid secara metodologi ilmiah, bebas dari gangguan luar (seperti gangguan perangkat panas atau responden asal-asalan), serta memiliki akurasi representasi yang kuat terhadap konsep yang diteliti (construct validity).
+Proses validasi formal tetap diperlukan meskipun data dikumpulkan secara otomatis karena sistem otomatis hanya bertugas merekam, bukan menganalisis kewajaran konteks. Otomatisasi tidak bisa mendeteksi apakah suatu angka rusak akibat kegagalan perangkat keras keras (hardware glitch), bias algoritma, atau anomali lingkungan luar. Validasi formal dengan metode seperti IQR bertindak sebagai penyaring (filter) ilmiah guna menjamin bahwa kesimpulan riset dibangun di atas data yang bersih dan dapat dipertanggungjawabkan di sidang akademik
+

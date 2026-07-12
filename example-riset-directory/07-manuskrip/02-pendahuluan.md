@@ -1,0 +1,24 @@
+# 02-pendahuluan.md
+
+# 1. Pendahuluan
+
+## 1.1 Latar Belakang Masalah
+Perkembangan teknologi kecerdasan buatan di Indonesia telah membawa perubahan besar pada cara masyarakat melakukan analisis agrikultur, khususnya melalui penggunaan visi komputer yang semakin masif. Transformasi ini melahirkan berbagai model arsitektur jaringan saraf tiruan untuk mengidentifikasi infeksi penyakit daun pada tanaman pangan, khususnya padi. Di lingkungan riset akademis dan implementasi lapangan, seperti yang menjadi fokus kajian mahasiswa di Universitas Putra Bangsa, kecepatan dan ketepatan model komputasi sangat diandalkan untuk mendukung analisis ketahanan pangan harian.
+
+Namun, strategi pengembangan model klasifikasi citra yang mengandalkan algoritma Machine Learning tradisional dengan ekstraksi fitur manual berpotensi menimbulkan masalah baru. Seiring bertambahnya variasi bentuk lesi penyakit—seperti Bacterial Leaf Blight, Brown Spot, dan Leaf Smut—kompleksitas elemen visual turut meningkat secara signifikan pada permukaan daun. Gejala nyata yang terukur menunjukkan bahwa sistem ekstraksi manual sering mengalami kegagalan penafsiran (scanning error) dan membutuhkan waktu pelatihan yang lebih lama. Akar masalah dari fenomena ini adalah adanya kepadatan fitur visual atau beban informasi akibat bentuk bercak yang rumit. Hal ini secara langsung meningkatkan beban komputasi model sebelum akhirnya berhasil memetakan dan mengklasifikasikan objek penyakit.
+
+## 1.2 Rumusan Masalah
+Dampak utama dari tingginya kompleksitas bercak visual daun adalah terhambatnya efisiensi tingkat akurasi sistem, terutama pada aktivitas identifikasi penyakit yang membutuhkan respons diagnosis instan dan presisi tinggi. Munculnya model arsitektur dengan pendekatan Transfer Learning seperti Inception V3 menawarkan solusi potensial. Model ini memisahkan ekstraksi fitur dasar dari klasifikasi tingkat atas melalui modul konvolusi paralel (multi-skala), yang berpotensi menghasilkan efisiensi waktu konvergensi yang jauh lebih cepat dibandingkan model linier biasa.
+
+Meskipun demikian, perbedaan performa teknis arsitektur tersebut, khususnya ketika dihadapkan pada keterbatasan sampel data lapangan yang diuji dalam skenario pembagian validasi parsial, belum dievaluasi secara empiris menggunakan data log kuantitatif yang objektif. Berdasarkan fenomena tersebut, pertanyaan penelitian (Research Question) yang diajukan adalah: "Apakah terdapat perbedaan signifikan pada tingkat efisiensi, yang diukur melalui rata-rata durasi waktu konvergensi dan minimalisasi tingkat loss, dalam implementasi model arsitektur Inception V3 kustom berbasis transfer learning (pada skenario pembagian split ratio 0.2) untuk klasifikasi penyakit daun padi?"
+
+## 1.3 Tujuan Penelitian
+Berdasarkan rumusan masalah yang telah diuraikan, penelitian ini memiliki dua tujuan utama, yaitu:
+
+1. Menguji dan membuktikan secara empiris tingkat efisiensi komputasi model Deep Learning arsitektur Inception V3 berdasarkan evaluasi metrik kurva pembelajaran (Learning Curve) dan grafik fungsi kerugian (Loss) secara nyata.
+2. Memvalidasi hipotesis bahwa struktur modul konvolusi paralel pada teknik Transfer Learning mampu memangkas durasi konvergensi secara signifikan dibandingkan jaringan dasar, tanpa memicu terjadinya overfitting atau penurunan akurasi pada data pengujian.
+
+## 1.4 Kontribusi Penelitian
+Penelitian ini diharapkan dapat memberikan kontribusi nyata yang terbagi ke dalam dua aspek utama, yaitu kontribusi teoretis bagi perkembangan ilmu pengetahuan dan kontribusi praktis bagi penerapan teknologi di lapangan:
+1. **Kontribusi Teoritis** Penelitian ini memberikan kontribusi ilmiah berupa kajian empiris mengenai perilaku konvergensi dan efisiensi ekstraksi fitur multi-skala pada arsitektur Inception V3 kustom ketika dihadapkan pada keterbatasan jumlah sampel data citra. Melalui analisis kurva pembelajaran (Learning Curve) dan fungsi kerugian (Loss), penelitian ini memperkaya literatur di bidang Computer Vision dan Deep Learning, khususnya mengenai optimasi Transfer Learning untuk pengenalan pola visual yang memiliki kompleksitas tinggi dan bentuk lesi yang dinamis.
+2. **Kontribusi Praktis:** Secara praktis, hasil penelitian ini dapat menjadi panduan teknis dan referensi arsitektur bagi para peneliti, mahasiswa Universitas Putra Bangsa, maupun pengembang perangkat lunak dalam membangun sistem diagnosis penyakit tanaman yang instan dan presisi. Model yang terbukti efisien dalam memangkas nilai loss dan waktu komputasi ini dapat diintegrasikan ke dalam aplikasi berbasis mobile atau web, sehingga membantu petani melakukan deteksi dini penyakit daun padi secara mandiri guna mencegah gagal panen dan meningkatkan produktivitas pertanian harian.

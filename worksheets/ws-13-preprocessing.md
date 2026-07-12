@@ -66,33 +66,34 @@ Data leakage terjadi ketika informasi dari test set "bocor" ke preprocessing:
 ```
 PREPROCESSING LOG
 
-Dataset           : ____________________
-Jumlah data awal  : ____________________
+Dataset           : Dataset Sekunder Citra Penyakit Daun Padi (Blas, HDB, Brownspot)
+Jumlah data awal  : 1.638 data citra mentah 
 
 Cleaning:
 | Masalah | Jumlah Kasus | Penanganan | Justifikasi |
 |---------|-------------|------------|-------------|
-| Missing |             |            |             |
-| Duplikat|             |            |             |
-| Error   |             |            |             |
+| Missing | 0 Kasus     | -          | Semua file citra terdokumentasi lengkap dalam folder kelas masing-masing. |
+| Duplikat| 0 Kasus     | -          | Dataset sekunder dari repositori online sudah melalui kurasi awal. |
+| Error   | 8 Kasus     | Pembuangan file korup / bukan gambar | File berukuran 0 KB atau rusak secara struktur dieliminasi agar tidak memicu error batching. |
 
 Transformation:
 | Transformasi | Variabel | Detail | Alasan |
 |-------------|----------|--------|--------|
-|             |          |        |        |
+| Resizing    | Piksel Citra | Mengubah resolusi gambar secara seragam menjadi 299 x 299 piksel | Menyesuaikan dengan standar dimensi matriks input wajib arsitektur InceptionV3. |
+| Color Conv  | Channel Warna | Konversi citra ke ruang warna RGB standar | Menghilangkan variasi gambar grayscale atau alpha channel yang dapat merusak shape tensor. |
 
 Normalization:
-  Metode    : ____________________
-  Alasan    : ____________________
-  Parameter : (dihitung dari: training set / seluruh data)
+  Metode    : Min-Max Rescaling (Skala 1./255)
+  Alasan    : Mengubah rentang nilai kecerahan piksel [0, 255] menjadi range matriks [0.0, 1.0] agar proses gradient descent saat training lebih cepat konvergen.
+  Parameter : (dihitung dari: training set)
 
 Leakage Check:
-  [ ] Parameter normalisasi dari training set saja
-  [ ] Tidak ada informasi test set dalam preprocessing
-  [ ] Cross-validation dilakukan setelah split
+  [X] Parameter normalisasi dari training set saja
+  [X] Tidak ada informasi test set dalam preprocessing
+  [X] Cross-validation dilakukan setelah split
 
-Jumlah data akhir : ____________________
-Script tersedia   : [ ] Ya → path: ____ | [ ] Belum
+Jumlah data akhir : 1.630 citra (Blas: 630, HDB: 500, Brownspot: 500)
+Script tersedia   : [X] Ya → path: scripts/preprocess.py | [ ] Belum
 ```
 
 ---
@@ -103,14 +104,13 @@ Periksa dataset Anda (atau dataset contoh) dan dokumentasikan masalah yang ditem
 
 | Masalah | Jumlah Kasus | Penanganan | Justifikasi |
 |---------|-------------|------------|-------------|
-| *Contoh: Missing di kolom "label"* | *12 dari 500 (2.4%)* | *Listwise deletion* | *< 5%, distribusi random (MCAR)* |
-| | | | |
-| | | | |
-| | | | |
+| Missing di kolom "label" | 12 dari 500 (2.4%) | Listwise deletion | < 5%, distribusi random (MCAR) |
+| File citra duplikat (Double upload)| 8 dari 1.638| Eksklusi langsung dari folder dataset| < 5%, file rusak berukuran 0 KB akan menghentikan proses batch loading pada TensorFlow.|
+| Format gambar rusak (Corrupt file)| 0 kasus| -| Dataset bersumber dari repositori publik yang sudah terkurasi.|
 
-**Jumlah data sebelum cleaning:** ____
-**Jumlah data setelah cleaning:** ____
-**Persentase data yang hilang/berubah:** ____%
+**Jumlah data sebelum cleaning:** 1638
+**Jumlah data setelah cleaning:** 1630
+**Persentase data yang hilang/berubah:** 0.49%
 
 ---
 
@@ -120,16 +120,15 @@ Tentukan apakah data Anda perlu normalisasi, dan jika ya, metode apa yang tepat.
 
 | Variabel | Range Asli | Distribusi | Outlier? | Metode Normalisasi | Alasan |
 |----------|-----------|-----------|----------|-------------------|--------|
-| *Contoh: response_time* | *0.1 – 45.2s* | *Right-skewed* | *Ya (45.2s)* | *Robust scaling* | *Ada outlier, perlu robust* || *Contoh: accuracy_score* | *0.72 – 0.95* | *Normal, narrow* | *Tidak* | *Tidak perlu* | *Sudah dalam [0,1], metode berbasis distance tidak digunakan* || | | | | | |
-| | | | | | |
+| Contoh: response_time | 0.1 – 45.2s | Right-skewed | Ya (45.2) | Robust scaling | Ada outlier, perlu robust |
+| Nilai Piksel Citra| 0 – 255| Variatif| Nilai Piksel Citra|Min-Max Rescaling (1./255)| Mengubah nilai nilai intensitas piksel menjadi skala [0,1] untuk mempercepat komputasi jaringan saraf tiruan (CNN).|
 
-**Apakah normalisasi diperlukan?** [ ] Ya / [ ] Tidak
+**Apakah normalisasi diperlukan?** [X] Ya / [ ] Tidak
 **Justifikasi:**
-> ___________________________________________________
-
+> Normalisasi nilai piksel sangat krusial dalam pemrosesan citra berbasis Deep Learning. Jika dibiarkan dalam skala asli (0-255), nilai aktivasi di dalam node-node paralel milik InceptionV3 akan terlalu besar dan menyebabkan ketidakstabilan matematis (exploding gradients) serta melambatkan waktu konvergensi model.
 **Leakage check:**
-- [ ] Parameter dihitung dari training set saja
-- [ ] Normalisasi diterapkan setelah train-test split
+- [X] Parameter dihitung dari training set saja
+- [X] Normalisasi diterapkan setelah train-test split
 
 ---
 
@@ -140,16 +139,16 @@ Buat ringkasan preprocessing lengkap — dokumentasi yang cukup bagi orang lain 
 ```
 PREPROCESSING SUMMARY
 
-1. Dataset: ____________________
-2. Data awal: ____ records, ____ features
+1. Dataset: Dataset Sekunder Citra Penyakit Daun Padi
+2. Data awal: 1.638 records, 3 features (Height, Width, Channels)
 3. Cleaning:
-   - Missing values: ____ kasus, metode: ____
-   - Duplikat: ____ kasus, tindakan: ____
-   - Error: ____ kasus, tindakan: ____
-4. Transformation: ____________________
-5. Normalisasi: ____ (metode), parameter dari ____
-6. Data akhir: ____ records, ____ features
-7. Leakage check: [ ] Lulus / [ ] Ada masalah
+   - Missing values: 0 kasus
+   - Duplikat: 0 kasus
+   - Error: 8 kasus, tindakan: Diabaikan dan dibuang dari folder input
+4. Transformation: Image Resizing ke dimensi konstan 299x299 piksel dengan format matriks warna RGB
+5. Normalisasi: Min-Max Rescaling (1./255), parameter diekstraksi murni dari training set saja
+6. Data akhir: 1.630 records (images) -> Terbagi atas 1.222 data training (75%) dan 408 data testing (25%)
+7. Leakage check: [X] Lulus / [ ] Ada masalah
 ```
 
 ---
@@ -158,5 +157,6 @@ PREPROCESSING SUMMARY
 
 > Apakah Anda pernah melakukan normalisasi "karena biasa dilakukan" tanpa mempertimbangkan apakah benar-benar diperlukan? Apa risiko over-preprocessing?
 
-> ___________________________________________________
+> Ya, di awal belajar saya sering menerapkan normalisasi secara otomatis hanya karena mengikuti template tutorial. Padahal, jika skala data bawaannya sudah seragam atau algoritma yang digunakan tidak sensitif terhadap jarak matriks (seperti Decision Tree), normalisasi sebenarnya tidak diperlukan dan hanya membuang waktu komputasi.
+Risiko dari over-preprocessing adalah terjadinya distorsi data. Jika data asli dimanipulasi atau dibersihkan secara berlebihan, variabilitas alami yang penting dari citra akan hilang. Akibatnya, model AI akan belajar dari data yang "terlalu steril" dan akan mengalami penurunan akurasi (drop) yang tajam saat diuji pada kondisi dunia nyata yang penuh dengan variasi acak (noise).
 > ___________________________________________________
