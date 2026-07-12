@@ -3,8 +3,11 @@
 **Judul:** Klasifikasi Penyakit Daun Padi (Bacterial Leaf Blight, Brown Spot, Leaf Smut) Menggunakan Arsitektur Inception V3 Berbasis Transfer Learning
 
 **Peneliti:** Defita Dwi Wulandary (NIM: 240202856)
+
 **Afiliasi:** Universitas Putra Bangsa (UPB) Kebumen
+
 **Target Publikasi:** Sinta 4/5 atau Scopus Q3–Q4
+
 **Status Penelitian:** Tahap 1–4 selesai; Tahap 5 (draf naskah jurnal) sedang berjalan (`example-riset-directory/07-manuskrip/`)
 
 ---
