@@ -124,4 +124,4 @@ Model arsitektur antarmuka *Stand-alone* (seperti penerapan minimalis pada GoPay
 | `05-kode/` | Source code implementasi antarmuka klasifikasi | Selesai |
 | `06-output/` | Visualisasi grafik batang D{perf} dan chart statistik | Selesai |
 | `07-manuskrip/` | Folder draf naskah jurnal ilmiah utama | Selesai |
-| `08-laporan` | Dokumen laporan resmi hasil penelitian institusi (Berkas Ini) | Selesai |
+| `08-laporan/` | Dokumen laporan resmi hasil penelitian institusi (Berkas Ini) | Selesai |
