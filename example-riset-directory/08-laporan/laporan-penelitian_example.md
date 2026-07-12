@@ -59,6 +59,7 @@ Penelitian dilaksanakan dalam 5 tahap terstruktur. Bagian ini merangkum pelaksan
 
 ### 3.4 Tahap 4 — Ekstraksi Data Statistik & Analisis Inferensial
 **Status: Selesai.** Data durasi interaksi dari 40 responden diekstraksi dan diproses menggunakan *pipeline* analisis untuk menguji hipotesis desain. Dilakukan uji deskriptif dan uji inferensial *Paired Samples T-Test* untuk melihat signifikansi perbedaan performa antarmuka.
+
 | **Proses** | **Fungsi**|
 |Uji Normalitas Shapiro-Wilk| Menentukan uji beda yang dipakai (parametrik atau non-parametrik) per metrik|
 |Statistik Deskriptif| Menghitung Mean, SD, Min, Max latency & CPU/RAM untuk mode none dan hybrid|
