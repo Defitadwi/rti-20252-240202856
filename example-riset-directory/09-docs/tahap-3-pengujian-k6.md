@@ -7,22 +7,20 @@
 ---
 
 ## Tujuan
-
-Menyusun skenario k6 untuk membandingkan gateway pada mode `CACHE_MODE=none` (baseline) vs `CACHE_MODE=hybrid` (mitigasi), dengan tiga jenis traffic:
-
-- **Legitimate traffic** — request dengan JWT valid (`kid` dikenal), mensimulasikan beban normal.
-- **Attack traffic** — request dengan JWT ber-`kid` acak/tidak terdaftar, mensimulasikan JWKS Endpoint Flooding (CVE-2026-48524).
-- **Mixed traffic** — legitimate + attack berjalan bersamaan, untuk mengukur dampak mitigasi terhadap pengalaman user legit saat diserang.
+Menyusun skenario pengujian menggunakan k6 untuk membandingkan performa *API Gateway* pada mode `CACHE_MODE=none` (baseline) vs `CACHE_MODE=hybrid` (mitigasi). Pengujian ini bertujuan untuk mengukur ketahanan sistem dalam mendukung layanan klasifikasi penyakit Blas, *Brownspot*, dan *Hawar Daun Bakteri* (HDB) terhadap berbagai ancaman trafik:
+* **Legitimate Traffic**: Simulasi akses pengguna normal yang mengunggah citra daun padi untuk mendapatkan inferensi model *InceptionV3*.
+* **Attack Traffic**: Simulasi *JWKS Endpoint Flooding* (CVE-2026-48524) untuk menguji seberapa kuat *gateway* melindungi database dari upaya pelumpuhan layanan.
+* **Mixed Traffic**: Simulasi kondisi dunia nyata di mana akses sah pengguna terdistraksi oleh serangan, guna mengukur stabilitas latensi sistem dalam memproses klasifikasi penyakit.
 
 ## Deliverable
-
-- [x] Skrip k6 `legitimate.js` (steady load dengan `kid` valid)
-- [x] Skrip k6 `attack.js` (flooding dengan `kid` acak/pool, `KID_STRATEGY=unique|pool`)
-- [x] Skrip k6 `mixed.js` (kombinasi legitimate + attack secara bersamaan, dengan Trend custom per scenario)
-- [x] Konfigurasi skenario (VUs, durasi, ramping) untuk tiap kombinasi mode × traffic
-- [x] Output metrics k6 + snapshot `/metrics` gateway dalam format JSON/CSV untuk Tahap 4
-- [x] Smoke test (kalibrasi sebelum matrix penuh)
-- [x] Matrix penuh 400 run (2 cache_mode x 5 traffic_variant x 40 replikasi)
+Pengembangan skenario pengujian telah memenuhi target berikut:
+- [x] **Skrip k6 `legitimate.js`**: Menjalankan *steady load* dengan *kid* yang valid.
+- [x] **Skrip k6 `attack.js`**: Melakukan *flooding* dengan *kid* acak/pool (`KID_STRATEGY=unique|pool`).
+- [x] **Skrip k6 `mixed.js`**: Menggabungkan trafik *legitimate* dan *attack* dengan *Trend custom* per skenario.
+- [x] **Konfigurasi Skenario**: Pengaturan VUs, durasi, dan *ramping* yang presisi untuk setiap kombinasi mode vs trafik.
+- [x] **Output Metrik**: Hasil k6 dan *snapshot* `/metrics` gateway dalam format JSON/CSV sebagai data mentah untuk analisis Tahap 4.
+- [x] **Smoke Test**: Kalibrasi sistem untuk memastikan stabilitas sebelum eksekusi matrix penuh.
+- [x] **Matrix Pengujian**: Eksekusi matrix penuh sebanyak 400 run (2 *cache_mode* x 5 *traffic_variant* x 40 replikasi).
 
 ## Desain yang Diimplementasikan
 
