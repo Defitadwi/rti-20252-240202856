@@ -1,39 +1,38 @@
 # Tahap 2 — Implementasi API Gateway (Go)
 
 **Status:** Selesai
-**Acuan arsitektur:** [tahap-1-arsitektur-dan-skema-database.md](tahap-1-arsitektur-dan-skema-database.md)
+**Acuan arsitektur:** [tahap-1-arsitektur-dan-skema-database.md] Penelitian ini merancang sistem deteksi penyakit daun padi yang terdiri dari tiga proses utama: pre-processing, process, dan post-processing.
+Pengembangan API Gateway ini bertujuan untuk menyediakan lapisan keamanan yang efisien agar model *InceptionV3* yang digunakan dalam klasifikasi penyakit daun padi (Blas, *Brownspot*, dan *Hawar Daun Bakteri*) dapat beroperasi secara optimal tanpa kendala latensi akibat verifikasi identitas yang berat.
+
 **Lokasi kode:** [../05-kode/gateway/](../05-kode/gateway/)
 
 ---
 
 ## Tujuan
-
-Mengimplementasikan API Gateway (Go + Echo) yang mendukung dua mode operasi melalui `CACHE_MODE`:
-
-- `none` — baseline, setiap request langsung query `signing_keys` di PostgreSQL.
-- `hybrid` — mitigasi penuh: Redis L1 cache (positive/negative) + rate-limit counter permanen di PostgreSQL.
+Sistem diimplementasikan dengan dua mode operasi melalui variabel lingkungan `CACHE_MODE` untuk tujuan eksperimen performa:
+* **none (Baseline)**: Setiap permintaan melakukan *query* langsung ke `signing_keys` di PostgreSQL untuk menguji performa sistem tanpa lapisan *caching*.
+* **hybrid (Mitigasi)**: Implementasi penuh *Redis L1 Cache* (positif/negatif) dan *rate-limit counter* permanen di PostgreSQL guna melindungi *resource* komputasi model CNN dari beban trafik berlebih.
 
 ## Deliverable
 
-- [x] Struktur project Go (`cmd/gateway`, `internal/...`) — DDD-lite per bounded-context (`jwks`, `ratelimit`, `jwtauth`, `httpapi`, `platform`, `metrics`)
-- [x] `docker-compose.yml` (gateway, postgres, redis) dengan healthcheck & `depends_on: condition: service_healthy`
-- [x] Migration SQL via Sqitch (`signing_keys`, `rate_limit_counters`, `upsert_rate_limit_counter` function)
-- [x] Skrip seed (`scripts/seed`): generate RSA-2048 keypair, insert ke `signing_keys`, cetak contoh JWT valid (exp +24h)
-- [x] Middleware verifikasi JWT (RS256) + resolusi `kid` (mode `none` dan `hybrid`, fail-closed pada Postgres down, fail-open pada Redis down)
-- [x] Endpoint `/metrics` (Prometheus, prefix `jwksgw_`): cache hit/miss, db query count, rate-limit blocked count, auth outcome, request duration
-- [x] Konfigurasi via environment variable (`.env.example`)
-- [x] `/healthz` (dipakai healthcheck compose & runner Tahap 3)
-- [x] `README.md` dengan command mentah (sqitch deploy, seed, run, docker compose, switch `CACHE_MODE`)
+Pengembangan sistem telah memenuhi target deliverable berikut:
+- [x] **Struktur Project Go**: DDD-lite per *bounded-context* (`jwks`, `ratelimit`, `jwtauth`, `httpapi`, `platform`, `metrics`).
+- [x] **Infrastruktur**: `docker-compose.yml` (gateway, postgres, redis) dilengkapi dengan *healthcheck* dan dependensi layanan.
+- [x] **Database & Migration**: Migrasi SQL melalui Sqitch untuk tabel `signing_keys`, `rate_limit_counters`, dan fungsi `upsert_rate_limit_counter`.
+- [x] **Seed & Testing**: Skrip otomatis (`scripts/seed`) untuk menghasilkan RSA-2048 keypair dan contoh JWT.
+- [x] **Middleware**: Implementasi verifikasi JWT (RS256) dengan resolusi `kid` yang menerapkan prinsip *fail-closed* saat PostgreSQL tidak tersedia.
+- [x] **Observabilitas**: Endpoint `/metrics` (Prometheus, prefix `jwksgw_`) untuk memantau *hit/miss ratio*, *query count*, dan durasi request.
+- [x] **Konfigurasi & Monitoring**: Konfigurasi via `.env.example` dan `/healthz` untuk verifikasi operasional sistem secara real-time.
+- [x] **Dokumentasi**: *README.md* lengkap dengan perintah operasional (sqitch deploy, seed, run, dsb).
 
 ## Hasil Verifikasi End-to-End
 
-Diverifikasi manual via `docker compose` + curl (lihat [../05-kode/gateway/README.md](../05-kode/gateway/README.md) bagian "Verifikasi end-to-end"):
-
-- **Hybrid**: valid kid → 200 (cache miss → DB → fill cache) → 200 (cache hit); unknown kid → 401 `invalid_kid` (negative cache) tanpa query DB berulang; flood concurrent dengan `kid` unik → sebagian `429 rate_limited` setelah >20 req/s per `client_ip`.
-- **None**: valid kid selalu 200 dengan `jwksgw_db_queries_total{resolve_key}` naik 1:1 per request; tidak pernah `429`.
-- **Fail-closed**: Postgres down → `503 service_unavailable` (kedua mode). Redis down (hybrid) → kid yang sudah ter-cache tetap `200` (fallback Postgres), `/healthz` melaporkan `redis:false`.
+Pengujian sistem divalidasi melalui *docker compose* dan *curl*:
+* **Mode Hybrid**: *Valid Request* berhasil (200 OK dengan *cache hit*). *Unknown KID* terblokir oleh *negative cache* (401). *Flood concurrent* memicu respon 429 *rate_limited* setelah melampaui >20 req/s.
+* **Mode Baseline**: *Valid Request* konsisten mendapatkan 200 OK dengan beban *query* basis data yang linier (1:1), tanpa limitasi trafik.
+* **Mekanisme Fail-Closed**: PostgreSQL *down* memicu 503 *service_unavailable*. Redis *down* memicu *fallback* ke PostgreSQL untuk *KID* yang sudah ter-*cache*, dengan status `/healthz` melaporkan `redis:false`.
 
 ## Catatan Lingkungan
 
-- PostgreSQL container di-expose ke host pada port **5433** (bukan 5432) untuk menghindari konflik dengan instance PostgreSQL lokal di mesin development. Di dalam jaringan Docker, gateway tetap mengakses `postgres:5432`.
-- Sqitch project (`migrations/`) adalah dokumentasi migrasi resmi (deploy/revert/verify), namun di mesin development saat ini `sqitch` CLI tidak punya driver `DBD::Pg` — migrasi diverifikasi dengan menjalankan file `deploy/*.sql` langsung via `psql`. Pastikan environment dengan `DBD::Pg` terpasang untuk `sqitch deploy` penuh.
+* **Manajemen Port PostgreSQL**: *Container* diekspos pada port 5433 untuk menghindari konflik port lokal. Gateway tetap mengakses internal database melalui port 5432.
+* **Migrasi Basis Data**: Proyek Sqitch digunakan untuk manajemen siklus hidup basis data. Migrasi diverifikasi menggunakan file `deploy/*.sql` melalui psql pada mesin pengembangan yang belum memiliki driver `DBD::Pg`.
