@@ -1,4 +1,4 @@
-# Proposal Penelitian: Evaluasi Performa Model Inception V3 untuk Klasifikasi Penyakit Daun Padi Berdasarkan Variasi Epoch dan Sebaran Data
+# Proposal Penelitian: Klasifikasi Penyakit Daun Padi Menggunakan Algoritma Deep Learning dengan Arsitektur Inception V3 berbasis Transfer Learning
 
 ## 1. Latar Belakang
 
