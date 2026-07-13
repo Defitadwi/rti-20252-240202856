@@ -1,4 +1,4 @@
-# Rencana Penelitian: Mitigasi JWKS Endpoint Flooding dengan Redis-PostgreSQL Hybrid Caching
+# Rencana Penelitian:Klasifikasi Penyakit Daun Padi Menggunakan Algoritma Deep Learning dengan Arsitektur Inception V3 berbasis Transfer Learning
 
 ## 1. Ringkasan
 
