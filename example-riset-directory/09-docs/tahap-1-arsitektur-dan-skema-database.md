@@ -28,9 +28,9 @@ Request (Gambar Daun + JWT) → Gateway parsing header JWT → ambil `kid`
   │     └─ OK ↓
   │
   └─ Query PostgreSQL (signing_keys WHERE kid = ? AND is_active)
-        ├─ FOUND     → isi Redis positive cache → verifikasi signature
-        └─ NOT FOUND → set Redis negative cache → tolak (401)
-
+  |      ├─ FOUND     → isi Redis positive cache → verifikasi signature
+  |     └─ NOT FOUND → set Redis negative cache → tolak (401)
+  |
   |
   |
   └─ Load Model (InceptionV3) → Pre-processing (Resize + Brightness 25%) → Prediksi
